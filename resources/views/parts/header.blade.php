@@ -35,7 +35,7 @@
             <div class="d-flex">
               <div class="flex-shrink-0">
                 <img
-                  src="/assets/img/user1-128x128.jpg"
+                  src="{{ Vite::asset('resources/images/user1-128x128.jpg') }}"
                   alt="User Avatar"
                   class="img-size-50 rounded-circle me-3"
                 />
@@ -156,7 +156,9 @@
             class="user-image rounded-circle shadow"
             alt="User Image"
           />
-          <span class="d-none d-md-inline">Alexander Pierce</span>
+          <span class="d-none d-md-inline">
+            {{ auth()->user()->name }}
+          </span>
         </a>
         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
           <!--begin::User Image-->
@@ -167,7 +169,7 @@
               alt="User Image"
             />
             <p>
-              Alexander Pierce - Web Developer
+              {{ auth()->user()->name }} - Web Developer
               <small>Member since Nov. 2023</small>
             </p>
           </li>
@@ -186,7 +188,11 @@
           <!--begin::Menu Footer-->
           <li class="user-footer">
             <a href="#" class="btn btn-default btn-flat">Profile</a>
-            <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
+
+            <form action="{{ route('logout') }}" method="POST">
+              @csrf
+              <button type="submit" class="btn btn-default btn-flat float-end">Logout</button>
+            </form>
           </li>
           <!--end::Menu Footer-->
         </ul>
