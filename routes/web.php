@@ -66,9 +66,11 @@ Route::middleware(['auth'])->group(function() {
 
 
         return view('home');
-    });
+    })->name('home');
 
-    Route::get('admin/usuarios', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+
+    // Route::get('admin/usuarios', [UserController::class, 'index'])->name('users.index');
     Route::get('admin/usuarios/cadastrar', [UserController::class, 'create'])->name('users.store');
     Route::post('admin/usuarios/cadastrar', [UserController::class, 'store'])->name('users.create');
     Route::get('admin/usuarios/{id}', [UserController::class, 'show']);
