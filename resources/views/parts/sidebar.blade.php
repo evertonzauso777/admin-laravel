@@ -36,6 +36,12 @@
                   <p>Usuários</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="{{ route('react.embed') }}" class="nav-link">
+                  <i class="nav-icon bi bi-currency-dollar"></i>
+                  <p>Poupança</p>
+                </a>
+              </li>
               <li class="nav-header">LABELS</li>
               <li class="nav-item">
                 <a href="#" class="nav-link">
