@@ -42,6 +42,12 @@
                   <p>Poupança</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="{{ route('documents.index') }}" class="nav-link">
+                  <i class="nav-icon bi bi-currency-dollar"></i>
+                  <p>Documentos</p>
+                </a>
+              </li>
               <li class="nav-header">LABELS</li>
               <li class="nav-item">
                 <a href="#" class="nav-link">
