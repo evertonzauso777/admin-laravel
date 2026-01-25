@@ -29,17 +29,7 @@ class OcrService
         if ($customUrl) {
             return $customUrl;
         }
-
-        // Local
-        return 'http://localhost:5000/ocr/';
-    }
-
-    /**
-     * Verifica se está rodando dentro de Docker
-     */
-    protected function isInsideDocker(): bool
-    {
-        return file_exists('/.dockerenv');
+        return 'https://api-ocr.zauso-dev.com.br/ocr';
     }
 
     /**
@@ -53,9 +43,11 @@ class OcrService
                 'size' => $file->getSize()
             ]);
 
-            // Fazer request multipart com a imagem
+            // Fazer request multipart com a imagem e parâmetros
             $response = Http::timeout($this->timeout)
                 ->attach('image', file_get_contents($file->getRealPath()), $file->getClientOriginalName())
+                ->attach('language', 'por')
+                ->attach('output_format', 'json')
                 ->post($this->apiUrl);
 
             Log::info('Resposta da API OCR recebida', [
@@ -63,9 +55,16 @@ class OcrService
             ]);
 
             if ($response->successful()) {
+                $apiData = $response->json();
+                
+                // Processar dados com extractData
+                $extractedData = $this->extractData($apiData);
+                
                 return [
                     'success' => true,
-                    'data' => $response->json(),
+                    'data' => $apiData,
+                    'extracted_data' => $extractedData['extracted_fields'],
+                    'is_valid' => $extractedData['is_valid'],
                     'status' => $response->status()
                 ];
             }
@@ -80,7 +79,6 @@ class OcrService
             Log::error('Erro ao chamar API OCR', [
                 'message' => $e->getMessage(),
                 'api_url' => $this->apiUrl,
-                'is_docker' => $this->isInsideDocker(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'code' => $e->getCode()
@@ -112,12 +110,51 @@ class OcrService
      */
     private function parseResponse(array $response): array
     {
-        // Exemplo: adaptar conforme retorno da sua API
+        // Adaptar conforme retorno real da API
         return [
             'text' => $response['text'] ?? null,
-            'confidence' => $response['confidence'] ?? null,
-            'fields' => $response['fields'] ?? []
+            'filename' => $response['filename'] ?? null,
+            'language' => $response['language'] ?? null,
+            'preprocess' => $response['preprocess'] ?? false,
+            'psm' => $response['psm'] ?? null,
+            'word_count' => $response['word_count'] ?? 0,
+            'text_length' => $response['text_length'] ?? 0,
+            'timestamp' => $response['timestamp'] ?? null,
+            'fields' => $this->extractFields($response['text'] ?? '')
         ];
+    }
+
+    /**
+     * Extrai campos específicos do texto OCR
+     */
+    private function extractFields(string $text): array
+    {
+        $lines = array_filter(array_map('trim', explode("\n", $text)));
+
+        return [
+            'raw_lines' => $lines,
+            'total_lines' => count($lines),
+            'has_content' => !empty($lines) && strlen($text) > 10,
+            'document_type' => $this->detectDocumentType($text)
+        ];
+    }
+
+    /**
+     * Detecta tipo de documento pelo texto
+     */
+    private function detectDocumentType(string $text): ?string
+    {
+        if (stripos($text, 'REGISTRO DE IDENTIDADE') !== false || stripos($text, 'RG') !== false) {
+            return 'RG';
+        } elseif (stripos($text, 'CARTEIRA NACIONAL') !== false || stripos($text, 'CNH') !== false) {
+            return 'CNH';
+        } elseif (stripos($text, 'CPF') !== false) {
+            return 'CPF';
+        } elseif (stripos($text, 'PASSPORT') !== false) {
+            return 'PASSPORT';
+        }
+
+        return null;
     }
 
     /**

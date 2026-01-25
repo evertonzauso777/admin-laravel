@@ -45,10 +45,10 @@
                 @enderror
             </div>
 
-            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+            <button type="submit" class="w-full bg-blue-600 text-black py-2 rounded-md hover:bg-blue-700 transition">
                 Enviar para Validação
             </button>
-
+            <br />
             <a href="{{ route('documents.index') }}" class="block text-center text-blue-600 hover:text-blue-700 text-sm">
                 Ver Histórico
             </a>

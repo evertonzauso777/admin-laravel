@@ -55,14 +55,11 @@ class DocumentValidationController extends Controller
             $ocrResult = $this->ocrService->validateDocument($file);
 
             if ($ocrResult['success']) {
-                // Extrair e processar dados
-                $extractedData = $this->ocrService->extractData($ocrResult['data']);
-
                 // Atualizar com resposta
                 $validation->update([
                     'ocr_response' => $ocrResult['data'],
-                    'extracted_data' => $extractedData['extracted_fields'],
-                    'validation_status' => $extractedData['is_valid'] ? 'validated' : 'failed'
+                    'extracted_data' => $ocrResult['extracted_data'],
+                    'validation_status' => $ocrResult['is_valid'] ? 'validated' : 'failed'
                 ]);
 
                 Log::info('Documento validado com sucesso', [

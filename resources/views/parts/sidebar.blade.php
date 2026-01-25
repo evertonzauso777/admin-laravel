@@ -44,7 +44,7 @@
               </li>
               <li class="nav-item">
                 <a href="{{ route('documents.index') }}" class="nav-link">
-                  <i class="nav-icon bi bi-currency-dollar"></i>
+                  <i class="nav-icon bi bi-file-arrow-down"></i>
                   <p>Documentos</p>
                 </a>
               </li>

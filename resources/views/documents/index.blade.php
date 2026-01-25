@@ -5,7 +5,7 @@
     <div class="max-w-4xl mx-auto">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-3xl font-bold">Histórico de Validações</h2>
-            <a href="{{ route('documents.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+            <a href="{{ route('documents.create') }}" class="px-4 py-2 bg-blue-600 text-black rounded-md hover:bg-blue-700 transition">
                 + Validar Novo Documento
             </a>
         </div>
@@ -18,13 +18,13 @@
 
         @if ($validations->count() > 0)
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <table class="w-full">
+                <table class="table">
                     <thead>
-                        <tr class="bg-gray-100 border-b">
-                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tipo</th>
-                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Data</th>
-                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Ações</th>
+                        <tr>
+                            <th scope="col">Tipo</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Data</th>
+                            <th scope="col">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
