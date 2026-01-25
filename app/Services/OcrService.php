@@ -10,11 +10,17 @@ class OcrService
 {
     protected $apiUrl;
     protected $timeout = 30;
+    protected $username;
+    protected $password;
 
     public function __construct()
     {
         // Detectar ambiente (Docker vs Local)
         $this->apiUrl = $this->detectApiUrl();
+        
+        // Carregar credenciais da API
+        $this->username = env('OCR_API_USERNAME');
+        $this->password = env('OCR_API_PASSWORD');
     }
 
     /**
@@ -44,7 +50,14 @@ class OcrService
             ]);
 
             // Fazer request multipart com a imagem e parâmetros
-            $response = Http::timeout($this->timeout)
+            $httpClient = Http::timeout($this->timeout);
+            
+            // Adicionar autenticação básica se credenciais estiverem definidas
+            if ($this->username && $this->password) {
+                $httpClient->withBasicAuth($this->username, $this->password);
+            }
+            
+            $response = $httpClient
                 ->attach('image', file_get_contents($file->getRealPath()), $file->getClientOriginalName())
                 ->attach('language', 'por')
                 ->attach('output_format', 'json')
@@ -181,6 +194,16 @@ class OcrService
     public function setTimeout(int $seconds): self
     {
         $this->timeout = $seconds;
+        return $this;
+    }
+
+    /**
+     * Define credenciais para autenticação básica
+     */
+    public function setCredentials(string $username, string $password): self
+    {
+        $this->username = $username;
+        $this->password = $password;
         return $this;
     }
 }
